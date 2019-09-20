@@ -218,18 +218,14 @@ inline auto start_to_stream(
 		event_stream<Value, Error> &stream,
 		lifetime &alive_while) {
 	if constexpr (std::is_same_v<Error, no_error>) {
-		return start_with_next_done([&](auto &&value) {
+		return start_with_next([&](auto &&value) {
 			stream.fire_forward(std::forward<decltype(value)>(value));
-		}, [&] {
-			stream.fire_done();
 		}, alive_while);
 	} else {
-		return start_with_next_error_done([&](auto &&value) {
+		return start_with_next_error([&](auto &&value) {
 			stream.fire_forward(std::forward<decltype(value)>(value));
 		}, [&](auto &&error) {
 			stream.fire_error_forward(std::forward<decltype(error)>(error));
-		}, [&] {
-			stream.fire_done();
 		}, alive_while);
 	}
 }
