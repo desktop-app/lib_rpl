@@ -1,4 +1,11 @@
+# This file is part of Desktop App Toolkit,
+# a set of libraries for developing nice desktop applications.
+#
+# For license and copyright information please follow this link:
+# https://github.com/desktop-app/legal/blob/master/LEGAL
+
 add_library(lib_rpl INTERFACE)
+add_library(desktop-app::lib_rpl ALIAS lib_rpl)
 
 get_filename_component(src_loc "." REALPATH)
 
@@ -43,5 +50,5 @@ INTERFACE
 
 target_link_libraries(lib_rpl
 INTERFACE
-    external_gsl
+    desktop-app::external_gsl
 )
