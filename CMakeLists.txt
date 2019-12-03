@@ -9,7 +9,7 @@ add_library(desktop-app::lib_rpl ALIAS lib_rpl)
 
 get_filename_component(src_loc "." REALPATH)
 
-set(lib_rpl_sources
+nice_target_sources(lib_rpl ${src_loc}
 INTERFACE
     rpl/details/callable.h
     rpl/details/superset_type.h
@@ -41,7 +41,6 @@ INTERFACE
     rpl/type_erased.h
     rpl/variable.h
 )
-nice_target_sources(lib_rpl ${src_loc} "${lib_rpl_sources}")
 
 target_include_directories(lib_rpl
 INTERFACE
