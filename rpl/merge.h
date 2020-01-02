@@ -10,7 +10,7 @@
 
 namespace rpl {
 namespace details {
-	
+
 struct merge_state {
 	merge_state(int working) : working(working) {
 	}
