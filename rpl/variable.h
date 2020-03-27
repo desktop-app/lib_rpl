@@ -89,6 +89,16 @@ public:
 
 	template <
 		typename OtherType,
+		typename = std::enable_if_t<
+		std::is_assignable_v<Type&, OtherType&&>>>
+	void force_assign(OtherType &&data) {
+		_lifetime.destroy();
+		_data = std::forward<OtherType>(data);
+		_changes.fire_copy(_data);
+	}
+
+	template <
+		typename OtherType,
 		typename OtherError,
 		typename Generator,
 		typename = std::enable_if_t<
