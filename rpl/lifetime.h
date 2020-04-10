@@ -36,6 +36,8 @@ public:
 	void add(lifetime &&other);
 	void destroy();
 
+	void release();
+
 	template <typename Type, typename... Args>
 	Type *make_state(Args&& ...args) {
 		const auto result = new Type(std::forward<Args>(args)...);
@@ -84,6 +86,21 @@ inline void lifetime::destroy() {
 	for (auto i = callbacks.rbegin(), e = callbacks.rend(); i != e; ++i) {
 		(*i)();
 	}
+}
+
+inline void lifetime::release() {
+	_callbacks.clear();
+}
+
+struct release_t {
+};
+
+inline release_t release() {
+	return {};
+}
+
+inline void operator|(rpl::lifetime &&lifetime, release_t) {
+	lifetime.release();
 }
 
 } // namespace rpl
