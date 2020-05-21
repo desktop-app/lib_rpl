@@ -92,15 +92,4 @@ inline void lifetime::release() {
 	_callbacks.clear();
 }
 
-struct release_t {
-};
-
-inline release_t release() {
-	return {};
-}
-
-inline void operator|(rpl::lifetime &&lifetime, release_t) {
-	lifetime.release();
-}
-
 } // namespace rpl
