@@ -70,6 +70,11 @@ public:
 	variable &operator=(variable &&other) {
 		return (*this = std::move(other._data));
 	}
+	variable(const variable &other) : _data(other._data) {
+	}
+	variable &operator=(const variable &other) {
+		return (*this = other._data);
+	}
 
 	template <
 		typename OtherType,
