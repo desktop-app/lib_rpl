@@ -108,6 +108,15 @@ inline auto map(Transform &&transform)
 		std::forward<Transform>(transform));
 }
 
+template <typename Value>
+[[nodiscard]] inline auto map_to(Value &&value) {
+	return map([value = std::forward<Value>(value)] {
+		return value;
+	});
+}
+
+inline auto to_empty = map_to(empty_value());
+
 namespace details {
 
 template <
