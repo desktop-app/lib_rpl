@@ -9,15 +9,6 @@
 #include <rpl/producer.h>
 #include <rpl/event_stream.h>
 
-namespace mapbox {
-namespace util {
-
-template <typename ...Types>
-class variant;
-
-} // namespace util
-} // namespace mapbox
-
 namespace rpl {
 namespace details {
 
@@ -31,28 +22,6 @@ struct supports_equality_compare {
 		= (sizeof(test((const A*)nullptr, (const B*)nullptr))
 			== sizeof(true_t));
 };
-
-// Fix for MSVC expression SFINAE.
-// It still doesn't work! :(
-//
-//template <typename Type1, typename ...Types1>
-//struct supports_equality_compare<
-//		mapbox::util::variant<Type1, Types1...>,
-//		mapbox::util::variant<Type1, Types1...>> {
-//	static constexpr bool value
-//		= (supports_equality_compare<Type1, Type1>::value
-//			&& supports_equality_compare<
-//			mapbox::util::variant<Types1...>,
-//			mapbox::util::variant<Types1...>>::value);
-//
-//};
-//template <typename Type>
-//struct supports_equality_compare<
-//		mapbox::util::variant<Type>,
-//		mapbox::util::variant<Type>> {
-//	static constexpr bool value = supports_equality_compare<Type, Type>::value;
-//
-//};
 
 template <typename A, typename B>
 constexpr bool supports_equality_compare_v

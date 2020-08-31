@@ -121,7 +121,7 @@ template <
 class combine_implementation_helper<producer<Values, Errors, Generators>...> {
 public:
 	using CombinedValue = std::tuple<Values...>;
-	using CombinedError = base::normalized_variant_t<Errors...>;
+	using CombinedError = v::normalized_variant_t<Errors...>;
 
 	combine_implementation_helper(
 		producer<Values, Errors, Generators> &&...producers)
@@ -154,7 +154,7 @@ template <
 inline auto combine_implementation(
 		producer<Values, Errors, Generators> &&...producers) {
 	using CombinedValue = std::tuple<Values...>;
-	using CombinedError = base::normalized_variant_t<Errors...>;
+	using CombinedError = v::normalized_variant_t<Errors...>;
 
 	return make_producer<CombinedValue, CombinedError>(
 		make_combine_implementation_helper(std::move(producers)...));
