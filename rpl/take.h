@@ -60,4 +60,63 @@ inline auto take(int count)
 	return details::take_helper(count);
 }
 
+namespace details {
+
+template <typename Predicate>
+class take_while_helper {
+public:
+	template <typename OtherPredicate>
+	take_while_helper(OtherPredicate &&predicate)
+	: _predicate(std::forward<OtherPredicate>(predicate)) {
+	}
+
+	template <
+		typename Value,
+		typename Error,
+		typename Generator,
+		typename = std::enable_if_t<
+		details::is_callable_v<Predicate, Value>>>
+	auto operator()(producer<Value, Error, Generator> &&initial) {
+	return make_producer<Value, Error>([
+			initial = std::move(initial),
+			predicate = std::move(_predicate)
+		](const auto &consumer) mutable {
+			return std::move(initial).start(
+			[
+				consumer,
+				predicate = std::move(predicate)
+			](auto &&value) {
+				const auto &immutable = value;
+				if (details::callable_invoke(
+					predicate,
+					immutable)
+				) {
+					consumer.put_next_forward(
+						std::forward<decltype(value)>(value));
+				} else {
+					consumer.put_done();
+				}
+			}, [consumer](auto &&error) {
+				consumer.put_error_forward(
+					std::forward<decltype(error)>(error));
+			}, [consumer] {
+				consumer.put_done();
+			});
+		});
+	}
+
+private:
+	Predicate _predicate;
+
+};
+
+} // namespace details
+
+template <typename Predicate>
+inline auto take_while(Predicate &&predicate)
+-> details::take_while_helper<std::decay_t<Predicate>> {
+	return details::take_while_helper<std::decay_t<Predicate>>(
+		std::forward<Predicate>(predicate));
+}
+
 } // namespace rpl
