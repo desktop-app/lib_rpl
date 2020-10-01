@@ -15,7 +15,7 @@ template <typename SideEffect>
 inline auto before_next(SideEffect &&method) {
 	return filter([method = std::forward<SideEffect>(method)](
 			const auto &value) {
-		method(value);
+		details::callable_invoke(method, value);
 		return true;
 	});
 }
