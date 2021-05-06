@@ -100,7 +100,10 @@ public:
 		return *this;
 	}
 
-	Type current() const {
+	std::conditional_t<
+			(std::is_trivially_copyable_v<Type> && sizeof(Type) <= 16),
+			Type,
+			const Type &> current() const {
 		return _data;
 	}
 	auto value() const {
