@@ -9,6 +9,7 @@
 #include <rpl/producer.h>
 #include <rpl/combine.h>
 #include <rpl/mappers.h>
+#include <gsl/pointers>
 #include "base/optional.h"
 
 namespace rpl {
@@ -133,11 +134,43 @@ public:
 
 };
 
+class filter_nullptr_helper {
+public:
+	template <typename Value, typename Error, typename Generator>
+	auto operator()(producer<
+			Value,
+			Error,
+			Generator> &&initial) const {
+		return make_producer<gsl::not_null<Value>, Error>([
+			initial = std::move(initial)
+		](const auto &consumer) mutable {
+			return std::move(initial).start(
+				[consumer](auto &&value) {
+					if (value) {
+						consumer.put_next_forward(
+							std::forward<decltype(value)>(
+								value));
+					}
+				}, [consumer](auto &&error) {
+					consumer.put_error_forward(
+						std::forward<decltype(error)>(error));
+				}, [consumer] {
+					consumer.put_done();
+				});
+		});
+	}
+
+};
+
 } // namespace details
 
 inline auto filter_optional()
 -> details::filter_optional_helper {
 	return details::filter_optional_helper();
+}
+
+inline auto filter_nullptr() -> details::filter_nullptr_helper {
+	return details::filter_nullptr_helper();
 }
 
 } // namespace rpl
