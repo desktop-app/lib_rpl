@@ -245,6 +245,8 @@ struct empty_value {
 struct empty_error {
 };
 
+inline constexpr empty_value empty{};
+
 template <
 	typename Value = empty_value,
 	typename Error = no_error,
