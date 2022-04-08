@@ -158,7 +158,7 @@ private:
 		return *this;
 	}
 
-	Type _data;
+	Type _data{};
 	event_stream<Type, Error> _changes;
 	lifetime _lifetime;
 
