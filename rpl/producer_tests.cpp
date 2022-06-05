@@ -4,7 +4,7 @@
 // For license and copyright information please follow this link:
 // https://github.com/desktop-app/legal/blob/master/LEGAL
 //
-#include "catch.hpp"
+#include <catch.hpp>
 
 #include <rpl/producer.h>
 #include <rpl/event_stream.h>
