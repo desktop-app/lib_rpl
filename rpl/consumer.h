@@ -7,7 +7,7 @@
 #pragma once
 
 #include <memory>
-#include <gsl/gsl_assert>
+#include <gsl/assert>
 #include <rpl/lifetime.h>
 #include <rpl/details/callable.h>
 
