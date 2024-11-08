@@ -207,6 +207,33 @@ private:
 
 };
 
+class map_error_to_done_helper {
+public:
+	map_error_to_done_helper() {
+	}
+
+	template <
+		typename Value,
+		typename Error,
+		typename Generator>
+	auto operator()(producer<Value, Error, Generator> &&initial) {
+		return make_producer<Value, no_error>([
+			initial = std::move(initial)
+		](const auto &consumer) mutable {
+			return std::move(initial).start(
+			[consumer](auto &&value) {
+				consumer.put_next_forward(
+					std::forward<decltype(value)>(value));
+			}, [consumer] {
+				consumer.put_done();
+			}, [consumer] {
+				consumer.put_done();
+			});
+		});
+	}
+
+};
+
 } // namespace details
 
 template <typename Transform>
@@ -214,6 +241,10 @@ inline auto map_error(Transform &&transform)
 -> details::map_error_helper<std::decay_t<Transform>> {
 	return details::map_error_helper<std::decay_t<Transform>>(
 		std::forward<Transform>(transform));
+}
+
+inline details::map_error_to_done_helper map_error_to_done() {
+	return details::map_error_to_done_helper();
 }
 
 } // namespace rpl
