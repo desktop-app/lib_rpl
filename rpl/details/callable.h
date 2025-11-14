@@ -27,7 +27,8 @@ static_assert(sizeof(false_t) != sizeof(true_t), "I can't work :(");
 template <
 	typename Method,
 	typename ...Args,
-	typename = decltype(std::declval<Method>()(
+	typename = decltype(std::invoke(
+		std::declval<Method>(),
 		std::declval<Args>()...))>
 true_t test_callable_plain(Method &&, Args &&...) noexcept;
 false_t test_callable_plain(...) noexcept;
@@ -96,7 +97,7 @@ constexpr bool is_callable_v = is_callable<Method, Args...>::value;
 template <typename Method, typename Arg>
 inline decltype(auto) callable_invoke(Method &&method, Arg &&arg) {
 	if constexpr (is_callable_plain_v<Method, Arg>) {
-		return std::forward<Method>(method)(std::forward<Arg>(arg));
+		return std::invoke(std::forward<Method>(method), std::forward<Arg>(arg));
 	} else if constexpr (is_callable_tuple_v<Method, Arg>) {
 		return std::apply(
 			std::forward<Method>(method),
@@ -116,7 +117,8 @@ using callable_result = decltype(callable_invoke(
 template <
 	typename Method,
 	typename Arg,
-	typename = decltype(std::declval<Method>()(
+	typename = decltype(std::invoke(
+		std::declval<Method>(),
 		const_ref_val<std::decay_t<Arg>>()))>
 true_t test_allows_const_ref(Method &&, Arg &&) noexcept;
 false_t test_allows_const_ref(...) noexcept;

@@ -73,9 +73,8 @@ public:
 		typename Value,
 		typename Error,
 		typename Generator,
-		typename NewValue = details::callable_result<
-			Transform,
-			Value>>
+		typename NewValue = std::remove_reference_t<
+			details::callable_result<Transform, Value>>>
 	auto operator()(producer<Value, Error, Generator> &&initial) {
 		return make_producer<NewValue, Error>([
 			initial = std::move(initial),
@@ -181,9 +180,8 @@ public:
 		typename Value,
 		typename Error,
 		typename Generator,
-		typename NewError = details::callable_result<
-			Transform,
-			Error>>
+		typename NewError = std::remove_reference_t<
+			details::callable_result<Transform, Error>>>
 	auto operator()(producer<Value, Error, Generator> &&initial) {
 		return make_producer<Value, NewError>([
 			initial = std::move(initial),
