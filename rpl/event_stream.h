@@ -126,6 +126,22 @@ inline void event_stream<Value, Error>::fire_forward(
 	const auto begin = base::index_based_begin(consumers);
 	const auto end = base::index_based_end(consumers);
 
+	if (copy->depth > 1) {
+		// A nested fire must only deliver, never rearrange: the outer
+		// frames hold indices into this same vector and resume compacting
+		// from them afterwards. Moving the last consumer down here leaves
+		// a moved-from husk that the outer frame then copies over a live
+		// consumer, destroying a subscription whose lifetime is still
+		// alive. Terminated consumers are pruned by the outermost fire.
+		const auto last = end - 1;
+		for (auto i = begin; i != last; ++i) {
+			i->put_next_copy(value);
+		}
+		last->put_next_forward(std::forward<OtherValue>(value));
+		--copy->depth;
+		return;
+	}
+
 	// Copy value for every consumer except the last.
 	const auto prev = end - 1;
 	auto staleFrom = std::remove_if(begin, prev, [&](const auto &consumer) {
