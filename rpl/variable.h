@@ -79,7 +79,7 @@ public:
 			std::is_assignable_v<Type&, OtherType>>>
 	variable(producer<OtherType, OtherError, Generator> &&stream) {
 		std::move(stream)
-			| on_next([=](auto &&data) {
+			| on_next([this](auto &&data) {
 				assign(std::forward<decltype(data)>(data));
 			}, _lifetime);
 	}
@@ -94,7 +94,7 @@ public:
 			producer<OtherType, OtherError, Generator> &&stream) {
 		_lifetime.destroy();
 		std::move(stream)
-			| on_next([=](auto &&data) {
+			| on_next([this](auto &&data) {
 				assign(std::forward<decltype(data)>(data));
 			}, _lifetime);
 		return *this;
