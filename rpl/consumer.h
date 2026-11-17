@@ -255,8 +255,17 @@ class consumer;
 
 namespace details {
 
+#if defined __GNUC__ && !defined __clang__
+// GCC 15 -O3 -g reports parts of copied consumers as uninitialized:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=123651
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif // __GNUC__ && !__clang__
 template <typename Value, typename Error, typename Handlers>
 class consumer_base {
+#if defined __GNUC__ && !defined __clang__
+#pragma GCC diagnostic pop
+#endif // __GNUC__ && !__clang__
 	static constexpr bool is_type_erased
 		= is_type_erased_handlers_v<Handlers>;
 
